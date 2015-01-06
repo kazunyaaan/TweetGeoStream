@@ -1,4 +1,3 @@
 TweetGeoStream
 ==============
-
-日本国内のgeoタグ付きのつぶやきをリアルタイムで取得してみるapp
+ActionController::Liveで日本国内のgeoタグ付きのつぶやきをリアルタイムで表示してみるRailsアプリのテスト
