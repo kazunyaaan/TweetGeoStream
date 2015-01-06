@@ -13,8 +13,12 @@
     setTimeout(function() {
       var source = new EventSource('/stream/stream');
 
-      function eventLogger(event) {
-        $("#progress").prepend(event.data + "<br>");
+      function eventLogger(event){
+        var t = JSON.parse(event.data);
+        
+        $("#progress").prepend(
+          "@" + t.id + "<br>"
+          + t.place + "【" + t.lat + ", " + t.lng + "】 -> " + t.tweet + "<br><hr>");
       }
 
       source.onmessage = eventLogger;

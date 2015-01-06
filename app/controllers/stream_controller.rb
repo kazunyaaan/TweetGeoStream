@@ -17,36 +17,40 @@ class StreamController < ApplicationController
     end
     
     response.headers['Content-Type'] = 'text/event-stream'
-
     sse = Reloader::SSE.new(response.stream)
 
     begin
       loop do
         t = tweets.pop
-        id        = t.user.screen_name
-        tweet     = t.text
-        timestamp = t.created_at.dup.localtime("+09:00")
-        place     = t.place.name
+
+        if t.place.country_code == "JP" then
+          id        = t.user.screen_name
+          tweet     = t.text
+          timestamp = t.created_at.dup.localtime("+09:00")
+          place     = t.place.name
         
-        unless t.geo.coordinates.nil? then
-          lat   = format("%.4f", t.geo.coordinates[0])
-          lng   = format("%.4f", t.geo.coordinates[1])
+          unless t.geo.coordinates.nil? then
+            lat   = format("%.4f", t.geo.coordinates[0])
+            lng   = format("%.4f", t.geo.coordinates[1])
+          end
+
+          tweet_hash = { :id => id,
+                         :place => place,
+                         :lat => lat,
+                         :lng => lng,
+                         :tweet => tweet,
+                         :timestamp => timestamp}
+
+          sse.write(tweet_hash)
         end
-        
-        sse.write({ :id => id,
-                    :place => place,
-                    :lat => lat,
-                    :lng => lng,
-                    :tweet => tweet,
-                    :timestamp => timestamp
-        })
-        #sse.write( "#{id}" )
       end
     rescue IOError
-      puts "IOError"
+      logger.info "IOError Stream..."
     ensure
+      logger.info "Stream closing..."
       twitter_thread.kill
       sse.close
+      logger.info "Stream closed..."
     end
   end
 end
