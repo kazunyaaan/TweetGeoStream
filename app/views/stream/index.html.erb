@@ -1,0 +1,23 @@
+<h1>ついーとじおすとりーむ</h1>
+
+<h3>日本国内のgeoタグ付きtweetをリアルタイムで表示</h3>
+
+<hr>
+
+<h3>Tweet</h3>
+
+<div id="progress"></div>
+
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    setTimeout(function() {
+      var source = new EventSource('/stream/stream');
+
+      function eventLogger(event) {
+        $("#progress").prepend(event.data + "<br>");
+      }
+
+      source.onmessage = eventLogger;
+    }, 10);
+  });
+</script>
